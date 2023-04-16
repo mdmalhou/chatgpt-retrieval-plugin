@@ -4,7 +4,7 @@ __pycache__/
 .env
 # C extensions
 *.so
-
+*.lock
 # Distribution / packaging
 .Python
 build/
