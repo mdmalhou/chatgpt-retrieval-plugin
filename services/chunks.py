@@ -12,7 +12,7 @@ tokenizer = tiktoken.get_encoding(
 )  # The encoding scheme to use for tokenization
 
 # Constants
-CHUNK_SIZE = 300  # The target size of each text chunk in tokens
+CHUNK_SIZE = 400  # The target size of each text chunk in tokens
 MIN_CHUNK_SIZE_CHARS = 350  # The minimum size of each text chunk in characters
 MIN_CHUNK_LENGTH_TO_EMBED = 5  # Discard chunks shorter than this
 EMBEDDINGS_BATCH_SIZE = 128  # The number of embeddings to request at a time
@@ -63,10 +63,11 @@ def get_text_chunks(text: str, chunk_token_size: Optional[int]) -> List[str]:
 
         # Find the last period or punctuation mark in the chunk
         last_punctuation = max(
-            chunk_text.rfind("."),
+            chunk_text.rfind(". "),
             chunk_text.rfind("?"),
             chunk_text.rfind("!"),
             chunk_text.rfind("\n"),
+            chunk_text.rfind("# "),
         )
 
         # If there is a punctuation mark, and the last punctuation index is before MIN_CHUNK_SIZE_CHARS
