@@ -1,3 +1,4 @@
+/data
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -136,3 +137,4 @@ dmypy.json
 
 # macOS .DS_Store files
 .DS_Store
+/data/

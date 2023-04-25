@@ -30,6 +30,7 @@ def get_text_chunks(text: str, chunk_token_size: Optional[int]) -> List[str]:
     Returns:
         A list of text chunks, each of which is a string of ~CHUNK_SIZE tokens.
     """
+    return [text]
     # Return an empty list if the text is empty or whitespace
     if not text or text.isspace():
         return []

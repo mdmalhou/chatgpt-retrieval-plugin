@@ -4,7 +4,6 @@ import uvicorn
 from fastapi import FastAPI, File, Form, HTTPException, Depends, Body, UploadFile
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
-
 from models.api import (
     DeleteRequest,
     DeleteResponse,
@@ -15,13 +14,14 @@ from models.api import (
 )
 from datastore.factory import get_datastore
 from services.file import get_document_from_file
-
-from models.models import DocumentMetadata, Source
+import logging
+from models.models import Document, DocumentMetadata, Source
 
 bearer_scheme = HTTPBearer()
 BEARER_TOKEN = os.environ.get("BEARER_TOKEN")
+DATA_DIR = os.environ.get("DATA_DIR")
 assert BEARER_TOKEN is not None
-
+assert DATA_DIR is not None
 
 def validate_token(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)):
     if credentials.scheme != "Bearer" or credentials.credentials != BEARER_TOKEN:
@@ -145,10 +145,30 @@ async def delete(
         raise HTTPException(status_code=500, detail="Internal Service Error")
 
 
+async def populate_database():
+    for filename in os.listdir(DATA_DIR):
+        if filename.endswith(".md"):
+            logging.debug(f"Loading {filename}")
+            with open(os.path.join(DATA_DIR, filename), "r") as f:
+                text = f.read()
+            metadata = DocumentMetadata(
+                source=Source.file,
+                name=filename,
+                content_type="text/markdown",
+            )
+            document = Document(
+                text=text,
+                metadata=metadata,
+            )
+            await datastore.upsert([document])
+
+
 @app.on_event("startup")
 async def startup():
     global datastore
     datastore = await get_datastore()
+    logging.info("Populating database")
+    await populate_database()
 
 
 def start():
