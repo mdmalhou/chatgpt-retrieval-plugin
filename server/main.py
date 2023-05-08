@@ -145,6 +145,23 @@ async def delete(
         raise HTTPException(status_code=500, detail="Internal Service Error")
 
 
+async def populate_database_from_json():
+    metadata = DocumentMetadata(
+        name="dataset.json",
+        content_type="text/markdown",
+    )
+    import json
+
+    with open(DATA_DIR, "r") as f:
+        data = json.load(f)
+    docs = [Document(
+        text=f'[Summary] {document["prompt"]} Answer: {document["completion"]}',
+        metadata=metadata,) for document in data]
+    print(docs[0])
+
+    await datastore.upsert(docs)
+
+
 async def populate_database():
     for filename in os.listdir(DATA_DIR):
         if filename.endswith(".md"):
@@ -168,7 +185,8 @@ async def startup():
     global datastore
     datastore = await get_datastore()
     logging.info("Populating database")
-    await populate_database()
+    #  await populate_database()
+    await populate_database_from_json()
 
 
 def start():
