@@ -155,7 +155,7 @@ async def populate_database_from_json():
     with open(DATA_DIR, "r") as f:
         data = json.load(f)
     docs = [Document(
-        text=f'[Summary] {document["prompt"]} Answer: {document["completion"]}',
+        text=f'{document["prompt"]} Answer: {document["completion"]}',
         metadata=metadata,) for document in data]
     print(docs[0])
 
